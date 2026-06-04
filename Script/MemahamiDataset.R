@@ -24,3 +24,4 @@ head(pembangunan_wilayah)
 
 dim(pembangunan_wilayah)
 # 2500 baris 13 vaariable
+

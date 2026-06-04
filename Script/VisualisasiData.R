@@ -6,23 +6,27 @@ data_wilayah <- read.csv(
 )
 
 
-#data_wilayah_2020 <- data_wilayah %>%
-#  filter(tahun == 2020) %>% 
-#  filter(provinsi == "DKI Jakarta")
+data_wilayah_2020 <- data_wilayah %>%
+  filter(tahun == 2020) %>% 
+  filter(provinsi == "DKI Jakarta")
 
 # 1. Histogram IPM
-# ggplot(data = data_wilayah_2020, aes(x = ipm, y = kemiskinan)) +
-#  geom_point() +
-#  geom_smooth() +
-#  labs(
-#    title = "Hubungan Lama Sekolah dan Tingkat Pengangguran",
-#    x = "ipm",
-#    y = "kemiskinan"
-#  ) +
-#  theme_minimal()
+ggplot(data = data_wilayah, aes(x = ipm, y = pengangguran)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Hubungan Lama Sekolah dan Tingkat Pengangguran",
+    x = "ipm",
+    y = "pengangguran"
+  ) +
+  theme_minimal()
+
+data_provinsi <- data_wilayah %>%
+  group_by(provinsi) %>%
+  summarise(ipm = mean(ipm, na.rm = TRUE))
 
 ggplot(data_provinsi,
-       aes(x = reorder(provinsi, ipm), y = harapan)) +
+       aes(x = reorder(provinsi, ipm), y = ipm)) +
   geom_col() +
   coord_cartesian(ylim = c(69, 71)) +
   labs(
@@ -31,12 +35,3 @@ ggplot(data_provinsi,
     y = "IPM"
   ) +
   theme_minimal()
-
-
-
-ranking_ipm <- data_wilayah %>%
-  group_by(provinsi) %>%
-  summarise(ipm = mean(ipm, na.rm = TRUE)) %>%
-  arrange(desc(ipm))
-
-ranking_ipm
