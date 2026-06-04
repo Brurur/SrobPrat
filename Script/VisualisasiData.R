@@ -10,7 +10,7 @@ data_wilayah_2020 <- data_wilayah %>%
   filter(tahun == 2020) %>% 
   filter(provinsi == "DKI Jakarta")
 
-# 1. Histogram IPM
+# 1. Histogram IPM dengan pengangguran
 ggplot(data = data_wilayah, aes(x = ipm, y = pengangguran)) +
   geom_point() +
   geom_smooth() +
@@ -21,6 +21,7 @@ ggplot(data = data_wilayah, aes(x = ipm, y = pengangguran)) +
   ) +
   theme_minimal()
 
+# 2. Ranking provinsi berdasarkan IPM
 data_provinsi <- data_wilayah %>%
   group_by(provinsi) %>%
   summarise(ipm = mean(ipm, na.rm = TRUE))
