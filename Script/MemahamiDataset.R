@@ -17,16 +17,17 @@ str(pembangunan_wilayah)
 # jalan_baik       : num  53.9 34.9 48.6 57.9 65.7 ...
 # air_bersih       : num  43.1 58.9 90.3 86.2 90.8 ...
 # catatan_data     : chr  "Normal" "Normal" "Normal" "Normal" ...
-
-# Nominal : provinsi, catatan_data
+#
+# Nominal : provinsi, catatan_data (klasifikasi/kategori)
 # Ordinal : tidak ada
-# Interval : tahun
+# Interval : tahun (Dapat diurutkan dan mengukur perbedaan/interval antar nilai)
 # Rasio : pdrb_perkapita, kemiskinan, pengangguran, ipm, harapan_hidup,
 #         rata_lama_sekolah, akses_internet
+#         (Memiliki semua karakteristik interval)
 
 summary(pembangunan_wilayah)
 
 head(pembangunan_wilayah)
 
 dim(pembangunan_wilayah)
-# 2500 baris 13 vaariable
+# 2500 baris 13 variable
