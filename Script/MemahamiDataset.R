@@ -5,7 +5,7 @@ data_wilayah <- read.csv(
 pembangunan_wilayah <- data.frame(data_wilayah)
 
 str(pembangunan_wilayah)
-#provinsi         : chr  "Jawa Barat" "Jawa Timur" "Kalimantan Timur" "DKI Jakarta" ...
+# provinsi         : chr  "Jawa Barat" "Jawa Timur" "Kalimantan Timur" "DKI Jakarta" ...
 # tahun            : int  2022 2022 2020 2022 2023 2020 2024 2023 2023 2020 ...
 # pdrb_perkapita   : num  3.84e+07 1.66e+08 2.68e+07 1.55e+08 1.99e+08 ...
 # kemiskinan       : num  19.69 9.68 4.13 20.43 14.39 ...
@@ -17,10 +17,17 @@ str(pembangunan_wilayah)
 # jalan_baik       : num  53.9 34.9 48.6 57.9 65.7 ...
 # air_bersih       : num  43.1 58.9 90.3 86.2 90.8 ...
 # catatan_data     : chr  "Normal" "Normal" "Normal" "Normal" ...
+#
+# Nominal : provinsi, catatan_data (klasifikasi/kategori)
+# Ordinal : tidak ada
+# Interval : tahun (Dapat diurutkan dan mengukur perbedaan/interval antar nilai)
+# Rasio : pdrb_perkapita, kemiskinan, pengangguran, ipm, harapan_hidup,
+#         rata_lama_sekolah, akses_internet
+#         (Memiliki semua karakteristik interval)
 
 summary(pembangunan_wilayah)
 
 head(pembangunan_wilayah)
 
 dim(pembangunan_wilayah)
-# 2500 baris 13 vaariable
+# 2500 baris 13 variable
