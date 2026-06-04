@@ -1,1 +1,0 @@
-makan makan enak tau
