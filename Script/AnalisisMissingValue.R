@@ -10,6 +10,14 @@ colSums(is.na(data))
 
 jumlah_missing <- colSums(is.na(data))
 
+#Missing value ada di kolom
+#"pdrb_perkapita"
+#"kemiskinan"
+#"pengangguran"
+#"ipm"
+#"akses_internet"
+#"jalan_baik"
+
 jumlah_missing
 
 # Persentase missing value
@@ -49,3 +57,5 @@ data_median
 #verifikasi
 
 colSums(is.na(data_median))
+
+data_median
