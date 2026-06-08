@@ -2,66 +2,144 @@
 # 1.3.6 Analisis Probabilitas dan Distribusi Data
 # ==========================================
 
-# 1. Muat dataset terlebih dahulu (pastikan working directory sudah benar)
+# Muat dataset
 data <- read.csv("dataset/pembangunan_wilayah_missing_outlier.csv")
 
-# Bersihkan data dari missing value terlebih dahulu untuk analisis ini
-# (Sebagai contoh, kita buat data frame sementara tanpa NA pada kolom yang diuji)
-data_clean <- na.omit(data)
+# Filter baris yang memiliki NA pada kolom yang dianalisis
+# (lebih aman daripada na.omit karena tidak membuang baris akibat NA di kolom lain)
+data_clean <- data[!is.na(data$kemiskinan) &
+                   !is.na(data$ipm)        &
+                   !is.na(data$pengangguran), ]
 
-print("=== 1. Uji Distribusi Data (Uji Normalitas) ===")
-# Kita akan menguji apakah variabel Indeks Pembangunan Manusia (IPM) terdistribusi normal
-# Menggunakan Uji Shapiro-Wilk (P-value > 0.05 berarti data berdistribusi normal)
-uji_normalitas_ipm <- shapiro.test(data_clean$ipm)
+cat("Jumlah observasi valid:", nrow(data_clean), "\n")
+
+# Simpan variabel utama dan parameternya
+kem  <- data_clean$kemiskinan
+ipm  <- data_clean$ipm
+peng <- data_clean$pengangguran
+
+mean_kem  <- mean(kem);  sd_kem  <- sd(kem)
+mean_ipm  <- mean(ipm);  sd_ipm  <- sd(ipm)
+mean_peng <- mean(peng); sd_peng <- sd(peng)
+
+
+# ==========================================
+# 1. UJI DISTRIBUSI DATA - shapiro.test()
+#    H0 : data berdistribusi normal
+#    H1 : data tidak berdistribusi normal
+#    Tolak H0 jika p-value < 0.05
+# ==========================================
+print("=== 1. Uji Distribusi Data (Uji Normalitas Shapiro-Wilk) ===")
+
+# Shapiro-Wilk mensyaratkan n <= 5000; gunakan sample jika data lebih besar
+set.seed(42)
+uji_normalitas_kem  <- shapiro.test(sample(kem,  min(5000, length(kem))))
+uji_normalitas_ipm  <- shapiro.test(sample(ipm,  min(5000, length(ipm))))
+uji_normalitas_peng <- shapiro.test(sample(peng, min(5000, length(peng))))
+
+print(uji_normalitas_kem)
 print(uji_normalitas_ipm)
+print(uji_normalitas_peng)
 
-# Opsional: Melihat distribusinya dengan histogram
-# hist(data_clean$ipm, main="Distribusi IPM", xlab="IPM", col="lightblue")
+# Interpretasi otomatis
+cat("-- Interpretasi --\n")
+for (hasil in list(list("Kemiskinan", uji_normalitas_kem),
+                   list("IPM",        uji_normalitas_ipm),
+                   list("Pengangguran", uji_normalitas_peng))) {
+  nama <- hasil[[1]];  sw <- hasil[[2]]
+  if (sw$p.value < 0.05) {
+    cat(nama, ": p-value =", format(sw$p.value, scientific = TRUE),
+        "< 0.05 -> Tolak H0, data TIDAK berdistribusi normal\n")
+  } else {
+    cat(nama, ": p-value =", format(sw$p.value, scientific = TRUE),
+        ">= 0.05 -> Gagal tolak H0, data berdistribusi normal\n")
+  }
+}
+cat("Catatan: Meskipun H0 ditolak, dengan n =", nrow(data_clean),
+    "pendekatan distribusi normal\n")
+cat("tetap dapat digunakan berdasarkan Central Limit Theorem (CLT).\n")
 
 
+# ==========================================
+# 2. PROBABILITAS SEDERHANA EMPIRIS
+#    Dihitung langsung dari proporsi data
+# ==========================================
 print("=== 2. Menghitung Probabilitas Sederhana (Empiris) ===")
+
 # a. Probabilitas wilayah dengan kemiskinan di atas rata-rata
-rata_kemiskinan <- mean(data_clean$kemiskinan)
-jumlah_diatas_rata_kemiskinan <- sum(data_clean$kemiskinan > rata_kemiskinan)
-total_wilayah <- nrow(data_clean)
+prob_kem_empiris <- mean(kem > mean_kem)
+cat("Rata-rata kemiskinan             :", round(mean_kem, 4), "%\n")
+cat("P empiris (kemiskinan > mean)    :", round(prob_kem_empiris, 4), "\n")
 
-prob_kemiskinan_tinggi <- jumlah_diatas_rata_kemiskinan / total_wilayah
-cat("Probabilitas empiris wilayah dengan kemiskinan di atas rata-rata:", prob_kemiskinan_tinggi, "\n")
+# b. Probabilitas wilayah dengan IPM tinggi (IPM > 70)
+prob_ipm_empiris <- mean(ipm > 70)
+cat("P empiris (IPM > 70)             :", round(prob_ipm_empiris, 4), "\n")
 
-# b. Probabilitas wilayah dengan IPM tinggi (misal: IPM > 70)
-jumlah_ipm_tinggi <- sum(data_clean$ipm > 70)
-prob_ipm_tinggi <- jumlah_ipm_tinggi / total_wilayah
-cat("Probabilitas empiris wilayah dengan IPM > 70:", prob_ipm_tinggi, "\n")
+# c. Probabilitas wilayah dengan pengangguran > 6%
+prob_peng_empiris <- mean(peng > 6)
+cat("P empiris (pengangguran > 6%)    :", round(prob_peng_empiris, 4), "\n")
 
 
-print("=== 3. Menghitung Probabilitas Menggunakan Distribusi Normal ===")
-# Menghitung probabilitas pengangguran lebih dari 6% MENGGUNAKAN pnorm()
-# Asumsi: data pengangguran mengikuti distribusi normal
-rata_pengangguran <- mean(data_clean$pengangguran)
-sd_pengangguran <- sd(data_clean$pengangguran)
+# ==========================================
+# 3. PROBABILITAS MENGGUNAKAN DISTRIBUSI NORMAL - pnorm()
+#    Membandingkan hasil empiris vs teoretis
+# ==========================================
+print("=== 3. Probabilitas Teoretis dengan pnorm() ===")
 
-# pnorm(6, mean, sd) menghitung probabilitas <= 6. 
-# Untuk > 6, kita gunakan 1 - pnorm() atau lower.tail = FALSE
-prob_pengangguran_lebih_6 <- pnorm(6, mean = rata_pengangguran, sd = sd_pengangguran, lower.tail = FALSE)
+cat("\n-- Kemiskinan (mean =", round(mean_kem, 2), "%, sd =", round(sd_kem, 2), ") --\n")
+prob_kem_teoritis <- pnorm(mean_kem, mean = mean_kem, sd = sd_kem, lower.tail = FALSE)
+cat("P teoritis (kemiskinan > mean)   :", round(prob_kem_teoritis, 4), "\n")
+cat("P empiris  (kemiskinan > mean)   :", round(prob_kem_empiris,  4), "\n")
 
-cat("Rata-rata Pengangguran:", rata_pengangguran, "\n")
-cat("Standar Deviasi Pengangguran:", sd_pengangguran, "\n")
-cat("Probabilitas teoretis pengangguran > 6% :", prob_pengangguran_lebih_6, "\n")
+prob_kem20_teoritis <- pnorm(20, mean = mean_kem, sd = sd_kem, lower.tail = FALSE)
+prob_kem20_empiris  <- mean(kem > 20)
+cat("P teoritis (kemiskinan > 20%)    :", round(prob_kem20_teoritis, 4), "\n")
+cat("P empiris  (kemiskinan > 20%)    :", round(prob_kem20_empiris,  4), "\n")
 
-print("=== 4. Menghitung Nilai Batas Menggunakan qnorm() ===")
+cat("\n-- IPM (mean =", round(mean_ipm, 2), ", sd =", round(sd_ipm, 2), ") --\n")
+prob_ipm_teoritis <- pnorm(70, mean = mean_ipm, sd = sd_ipm, lower.tail = FALSE)
+cat("P teoritis (IPM > 70)            :", round(prob_ipm_teoritis, 4), "\n")
+cat("P empiris  (IPM > 70)            :", round(prob_ipm_empiris,  4), "\n")
 
-# Contoh Kasus: Pemerintah ingin memberikan bantuan kepada 15% wilayah 
-# dengan tingkat pengangguran tertinggi. Berapa batas minimal tingkat 
-# pengangguran agar suatu wilayah masuk ke dalam kelompok 15% tersebut?
+cat("\n-- Pengangguran (mean =", round(mean_peng, 2), "%, sd =", round(sd_peng, 2), ") --\n")
+prob_peng_teoritis <- pnorm(6, mean = mean_peng, sd = sd_peng, lower.tail = FALSE)
+cat("Rata-rata pengangguran           :", round(mean_peng, 4), "%\n")
+cat("Standar deviasi pengangguran     :", round(sd_peng,   4), "\n")
+cat("P teoritis (pengangguran > 6%)   :", round(prob_peng_teoritis, 4), "\n")
+cat("P empiris  (pengangguran > 6%)   :", round(prob_peng_empiris,  4), "\n")
 
-# Jika 15% tertinggi, berarti kita mencari nilai persentil ke-85 (100% - 15% = 85% atau 0.85)
-batas_pengangguran_bantuan <- qnorm(0.85, mean = rata_pengangguran, sd = sd_pengangguran)
+cat("\nInterpretasi: Selisih kecil antara nilai empiris dan teoretis menunjukkan\n")
+cat("bahwa pendekatan distribusi normal cukup representatif untuk data ini.\n")
 
-cat("Batas minimal pengangguran untuk masuk kelompok 15% tertinggi:", batas_pengangguran_bantuan, "%\n")
 
-# Contoh Kasus 2: Mencari batas nilai IPM untuk 20% wilayah dengan IPM terbaik (persentil ke-80)
-rata_ipm_clean <- mean(data_clean$ipm)
-sd_ipm_clean <- sd(data_clean$ipm)
-batas_ipm_top_20 <- qnorm(0.80, mean = rata_ipm_clean, sd = sd_ipm_clean)
+# ==========================================
+# 4. NILAI BATAS DENGAN qnorm()
+#    Menentukan nilai x pada persentil tertentu
+# ==========================================
+print("=== 4. Menghitung Nilai Batas dengan qnorm() ===")
 
-cat("Nilai IPM minimal agar sebuah wilayah masuk dalam kategori 20% terbaik adalah:", batas_ipm_top_20, "\n")
+# Kasus 1: 15% wilayah dengan pengangguran tertinggi
+# Artinya mencari persentil ke-85 (karena 100% - 15% = 85%)
+batas_peng_bantuan <- qnorm(0.85, mean = mean_peng, sd = sd_peng)
+cat("\nKasus 1: Batas wilayah masuk 15% pengangguran tertinggi\n")
+cat("  -> qnorm(0.85, mean =", round(mean_peng, 2), ", sd =", round(sd_peng, 2), ")\n")
+cat("  -> Batas minimal pengangguran:", round(batas_peng_bantuan, 2), "%\n")
+cat("  Artinya: wilayah dengan pengangguran >=", round(batas_peng_bantuan, 2),
+    "% masuk kelompok 15% tertinggi.\n")
+
+# Kasus 2: 20% wilayah dengan IPM terbaik
+# Artinya mencari persentil ke-80
+batas_ipm_top20 <- qnorm(0.80, mean = mean_ipm, sd = sd_ipm)
+cat("\nKasus 2: Batas wilayah masuk 20% IPM terbaik\n")
+cat("  -> qnorm(0.80, mean =", round(mean_ipm, 2), ", sd =", round(sd_ipm, 2), ")\n")
+cat("  -> Nilai IPM minimal:", round(batas_ipm_top20, 2), "\n")
+cat("  Artinya: wilayah dengan IPM >=", round(batas_ipm_top20, 2),
+    "masuk kategori 20% terbaik.\n")
+
+# Kasus 3: 10% wilayah dengan kemiskinan tertinggi
+batas_kem_tinggi <- qnorm(0.90, mean = mean_kem, sd = sd_kem)
+cat("\nKasus 3: Batas wilayah masuk 10% kemiskinan tertinggi\n")
+cat("  -> qnorm(0.90, mean =", round(mean_kem, 2), ", sd =", round(sd_kem, 2), ")\n")
+cat("  -> Batas minimal kemiskinan:", round(batas_kem_tinggi, 2), "%\n")
+cat("  Artinya: wilayah dengan kemiskinan >=", round(batas_kem_tinggi, 2),
+    "% masuk kelompok 10% termiskin.\n")
