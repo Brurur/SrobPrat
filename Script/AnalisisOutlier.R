@@ -53,13 +53,13 @@ hitung_iqr <- function(data_input, nama_kolom, nama_variabel) {
   outlier_data <- data_input %>% 
     filter(!!sym(nama_kolom) > batas_atas | !!sym(nama_kolom) < batas_bawah) %>% 
     select(provinsi, tahun, !!sym(nama_kolom)) %>% 
-    arrange(desc(!!sym(nama_kolom))) # Urutkan dari yang paling ekstrem
+    arrange(desc(!!sym(nama_kolom)))
   
   # Cetak jumlah total outlier
   cat("Total Outlier Ditemukan:", nrow(outlier_data), "data\n")
   cat("---------------------------------------------------\n")
   
-  # --- 3. TAMPILKAN DAFTAR OKNUM OUTLIER ---
+  # --- DAFTAR OUTLIER ---
   if(nrow(outlier_data) > 0) {
     cat("Daftar Data Outlier (Menampilkan hingga 10 teratas):\n")
     print(head(outlier_data, 10))
@@ -96,7 +96,7 @@ data_2020_number <- data_2020 %>%
 par(mfrow = c(3, 3), mar = c(2, 2, 3, 1), oma = c(0, 0, 4, 0))
 
 for(i in 1:ncol(data_2020_number)) {
-  boxplot(data_2020_number[[i]], main = colnames(data_2020)[i], col = "green")
+  boxplot(data_2020_number[[i]], main = colnames(data_2020_number)[i], col = "green")
 }
 mtext("ANALISIS OUTLIER INDIKATOR DAERAH TAHUN 2020", 
       side = 3,
@@ -115,7 +115,7 @@ data_2021_number <- data_2021%>%
 par(mfrow = c(3, 3), mar = c(2, 2, 3, 1), oma = c(0, 0, 4, 0))
 
 for(i in 1:ncol(data_2021_number)) {
-  boxplot(data_2021_number[[i]], main=colnames(data_2021)[i], col="red")
+  boxplot(data_2021_number[[i]], main=colnames(data_2021_number)[i], col="red")
 }
 mtext("ANALISIS OUTLIER INDIKATOR DAERAH TAHUN 2021", 
       side = 3,
@@ -134,7 +134,7 @@ data_2022_number <- data_2022 %>%
 data_2022
 par(mfrow = c(3, 3), mar = c(2, 2, 3, 1), oma = c(0, 0, 4, 0))
 for(i in 1:ncol(data_2022_number)) {
-  boxplot(data_2022_number[[i]], main=colnames(data_2022)[i], col="purple")
+  boxplot(data_2022_number[[i]], main=colnames(data_2022_number)[i], col="purple")
 }
 mtext("ANALISIS OUTLIER INDIKATOR DAERAH TAHUN 2022", 
       side = 3,
@@ -153,7 +153,7 @@ data_2023_number <- data_2023 %>%
 data_2023_number
 par(mfrow = c(3, 3), mar = c(2, 2, 3, 1), oma = c(0, 0, 4, 0))
 for(i in 1:ncol(data_2023_number)) {
-  boxplot(data_2023_number[[i]], main=colnames(data_2023)[i], col="yellow")
+  boxplot(data_2023_number[[i]], main=colnames(data_2023_number)[i], col="yellow")
 }
 mtext("ANALISIS OUTLIER INDIKATOR DAERAH TAHUN 2023", 
       side = 3,
@@ -171,7 +171,7 @@ data_2024_number <- data_2024 %>%
          harapan_hidup, rata_lama_sekolah, akses_internet, jalan_baik, air_bersih)
 par(mfrow = c(3, 3), mar = c(2, 2, 3, 1), oma = c(0, 0, 4, 0))
 for(i in 1:ncol(data_2024_number)) {
-  boxplot(data_2024_number[[i]], main=colnames(data_2024)[i], col="blue")
+  boxplot(data_2024_number[[i]], main=colnames(data_2024_number)[i], col="blue")
 }
 mtext("ANALISIS OUTLIER INDIKATOR DAERAH TAHUN 2024", 
       side = 3,
