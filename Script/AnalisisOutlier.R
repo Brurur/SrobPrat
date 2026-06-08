@@ -61,7 +61,7 @@ hitung_iqr <- function(data_input, nama_kolom, nama_variabel) {
   
   # --- DAFTAR OUTLIER ---
   if(nrow(outlier_data) > 0) {
-    cat("Daftar Data Outlier (Menampilkan hingga 10 teratas):\n")
+    cat("Daftar Data Outlier:\n")
     print(head(outlier_data, 10))
   } else {
     cat("Tidak ada data yang menjadi outlier.\n")
@@ -81,7 +81,6 @@ par(mfrow=c(3,3), mar=c(2, 2, 2, 1))
 for(i in 1:ncol(df_indikator)) {
   boxplot(df_indikator[[i]], main=colnames(df_indikator)[i], col="skyblue")
 }
-
 # IQR untuk menghitung dan mencari siapa outliernya
 hitung_iqr(data, "pdrb_perkapita", "PDRB PER KAPITA")
 hitung_iqr(data, "kemiskinan", "KEMISKINAN")
