@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.6.8)  8 JUN 2026 13:04
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.6.8)  8 JUN 2026 13:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1029,26 +1029,28 @@ File: Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-ipm-pro-1.pdf G
 [13]
 File: Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-pendidikan-harapan-1.pdf Graphic file (type pdf)
 <use Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-pendidikan-harapan-1.pdf>
+Missing character: There is no ④ (U+2463) in font [lmmono10-regular]:!
 [14]
 File: Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-jakarta-tahun-1.pdf Graphic file (type pdf)
 <use Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-jakarta-tahun-1.pdf>
+[15]
 File: Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-pengangguran-kemiskinan-1.pdf Graphic file (type pdf)
 <use Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/scatter-pengangguran-kemiskinan-1.pdf>
-[15] [16]
+[16]
 File: Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/distribusi-histogram-1.pdf Graphic file (type pdf)
 <use Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/distribusi-histogram-1.pdf>
-[17] [18]
+[17] [18] [19]
 File: Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/korelasi-matrix-1.pdf Graphic file (type pdf)
 <use Laporan_Proyek_Akhir_Kelompok10_files/figure-latex/korelasi-matrix-1.pdf>
-[19] [20] [21] [22] [23]
-Underfull \vbox (badness 10000) detected at line 1254
+[20] [21] [22] [23] [24]
+Underfull \vbox (badness 10000) detected at line 1278
  []
 
 
-Underfull \vbox (badness 10000) detected at line 1254
+Underfull \vbox (badness 10000) detected at line 1278
  []
 
-[24] [25] [26] [27] (./Laporan_Proyek_Akhir_Kelompok10.aux)
+[25] [26] [27] [28] (./Laporan_Proyek_Akhir_Kelompok10.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-05-26>
@@ -1066,4 +1068,4 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  90i,11n,114p,430b,525s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Laporan_Proyek_Akhir_Kelompok10.pdf (27 pages).
+Output written on Laporan_Proyek_Akhir_Kelompok10.pdf (28 pages).

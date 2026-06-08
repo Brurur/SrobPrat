@@ -425,23 +425,47 @@ ggplot(
 ### Tren DKI Jakarta dari Tahun ke Tahun
 
 ```{r scatter-jakarta-tahun, fig.cap="Tren DKI Jakarta dari Tahun ke Tahun"}
-dki <- data_wilayah %>%
-  filter(provinsi == "DKI Jakarta")
+dki_trend <- data_wilayah %>%
+  filter(provinsi == "DKI Jakarta") %>%
+  group_by(tahun) %>%
+  summarise(
+    IPM             = mean(ipm,           na.rm = TRUE),
+    Pengangguran    = mean(pengangguran,  na.rm = TRUE),
+    Kemiskinan      = mean(kemiskinan,    na.rm = TRUE),
+    Harapan_Hidup   = mean(harapan_hidup, na.rm = TRUE)
+  ) %>%
+  pivot_longer(-tahun, names_to = "Indikator", values_to = "Nilai")
 
-ggplot(dki, aes(x = factor(tahun), y = ipm)) +
-  geom_boxplot(fill = "skyblue") +
-  stat_summary(
-    fun = median,
-    geom = "point",
-    size = 3,
-    shape = 18
-  ) +
+# Warna per indikator
+pal_dki <- c(
+  "IPM"           = "#377EB8",
+  "Pengangguran"  = "#E41A1C",
+  "Kemiskinan"    = "#FF7F00",
+  "Harapan_Hidup" = "#4DAF4A"
+)
+
+p4 <- ggplot(dki_trend, aes(x = tahun, y = Nilai,
+                            color = Indikator, group = Indikator)) +
+  geom_line(linewidth = 1.6) +
+  geom_point(size = 3.5, aes(shape = Indikator)) +
+  geom_label(aes(label = round(Nilai, 1)),
+             size = 2.8, vjust = -0.7, show.legend = FALSE,
+             label.size = 0.2) +
+  scale_color_manual(values = pal_dki) +
+  scale_x_continuous(breaks = sort(unique(dki_trend$tahun))) +
+  facet_wrap(~ Indikator, scales = "free_y", nrow = 2) +
   labs(
-    title = "Distribusi IPM DKI Jakarta per Tahun",
+    title    = "④ Tren DKI Jakarta dari Tahun ke Tahun (2020–2024)",
+    subtitle = "Setiap panel berskala bebas untuk memperjelas fluktuasi",
     x = "Tahun",
-    y = "IPM"
+    y = "Nilai Indikator",
+    color = NULL, shape = NULL
   ) +
-  theme_minimal()
+
+  theme(strip.text = element_text(face = "bold"),
+        legend.position = "none")
+
+print(p4)
 ```
 
 ### Hubungan Pengangguran dan Kemiskinan
