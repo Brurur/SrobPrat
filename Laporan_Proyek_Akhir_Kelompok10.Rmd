@@ -72,7 +72,6 @@ library(psych)     # untuk describe()
 
 ---
 
-\newpage
 
 # BAB I: PENDAHULUAN
 
@@ -352,58 +351,114 @@ Berdasarkan boxplot di atas, variabel **PDRB per Kapita** menunjukkan *outlier* 
 
 ## Visualisasi Data
 
-### Distribusi IPM per Wilayah
+### Histogram IPM dengan pengangguran
 
-```{r visualisasi-ipm, fig.cap="Distribusi IPM Berdasarkan Wilayah"}
-ggplot(data, aes(x = reorder(Provinsi, IPM), y = IPM, fill = Wilayah)) +
+```{r visualisasi-ipm, fig.cap="Histogram IPM dengan pengangguran"}
+library(readr)
+library(ggplot2)
+library(dplyr)
+
+data_wilayah <- read.csv(
+  "Dataset/pembangunan_wilayah_missing_outlier.csv"
+)
+
+
+data_wilayah_2020 <- data_wilayah %>%
+  filter(tahun == 2020) %>% 
+  filter(provinsi == "DKI Jakarta")
+
+# 1. Histogram IPM dengan pengangguran
+ggplot(data = data_wilayah, aes(x = ipm, y = pengangguran)) +
+  geom_point() +
+  geom_smooth() +
+  labs(
+    title = "Hubungan Lama Sekolah dan Tingkat Pengangguran",
+    x = "ipm",
+    y = "pengangguran"
+  ) +
+  theme_minimal()
+```
+
+### Ranking provinsi berdasarkan IPM
+
+```{r scatter-ipm-pro, fig.cap="Ranking provinsi berdasarkan IPM"}
+data_provinsi <- data_wilayah %>%
+  group_by(provinsi) %>%
+  summarise(ipm = mean(ipm, na.rm = TRUE))
+
+ggplot(data_provinsi,
+       aes(x = reorder(provinsi, ipm), y = ipm)) +
   geom_col() +
-  geom_hline(yintercept = mean(data$IPM), linetype = "dashed",
-             color = "red", linewidth = 0.8) +
-  annotate("text", x = 3, y = mean(data$IPM) + 0.8,
-           label = paste("Rata-rata:", round(mean(data$IPM), 2)),
-           color = "red", size = 3) +
-  coord_flip() +
-  scale_fill_brewer(palette = "Set2") +
-  labs(title    = "Indeks Pembangunan Manusia (IPM) per Provinsi",
-       subtitle = "Garis merah = rata-rata nasional",
-       x = "Provinsi", y = "IPM", fill = "Wilayah") +
-  theme_minimal(base_size = 9) +
-  theme(plot.title    = element_text(face = "bold", hjust = 0.5),
-        legend.position = "bottom")
+  coord_cartesian(ylim = c(69, 71)) +
+  labs(
+    title = "Ranking IPM Provinsi",
+    x = "Provinsi",
+    y = "IPM"
+  ) +
+  theme_minimal()
 ```
 
-### Scatter Plot: IPM vs PDRB per Kapita
+### Geom Point Pendidikan dengan Harapan Hidup
 
-```{r scatter-ipm-pdrb, fig.cap="Hubungan IPM dan PDRB per Kapita"}
-ggplot(data, aes(x = PDRB_PerKapita, y = IPM, color = Wilayah, label = Provinsi)) +
-  geom_point(size = 3, alpha = 0.8) +
-  geom_smooth(method = "lm", se = TRUE, color = "black", linetype = "dashed",
-              linewidth = 0.7) +
-  scale_x_continuous(labels = scales::comma) +
-  labs(title    = "Scatter Plot: IPM vs PDRB per Kapita",
-       subtitle = "Garis putus-putus = regresi linear",
-       x = "PDRB per Kapita (Juta Rupiah)",
-       y = "IPM", color = "Wilayah") +
-  theme_minimal(base_size = 10) +
-  theme(plot.title       = element_text(face = "bold", hjust = 0.5),
-        legend.position  = "bottom")
+```{r scatter-pendidikan-harapan, fig.cap="Geom Point Pendidikan dengan Harapan Hidup"}
+ggplot(
+  data_wilayah,
+  aes(
+    x = rata_lama_sekolah,
+    y = harapan_hidup
+  )
+) +
+  geom_point(
+    alpha = 0.7,
+    size = 2,
+    color = "#2C7FB8"
+  ) +
+  labs(
+    title = "Pendidikan dan Harapan Hidup",
+    subtitle = "Wilayah dengan pendidikan lebih tinggi cenderung memiliki usia harapan hidup lebih tinggi",
+    x = "Rata-rata Lama Sekolah (tahun)",
+    y = "Harapan Hidup (tahun)"
+  ) +
+  theme_minimal(base_size = 12)
 ```
 
-### Perbandingan Kemiskinan dan Elektrifikasi
+### Tren DKI Jakarta dari Tahun ke Tahun
 
-```{r scatter-kemiskinan-listrik, fig.cap="Kemiskinan vs Rasio Elektrifikasi"}
-ggplot(data, aes(x = Elektrifikasi_Pct, y = Kemiskinan_Pct,
-                 color = Wilayah, size = IPM)) +
-  geom_point(alpha = 0.8) +
-  scale_size_continuous(range = c(2, 8)) +
-  labs(title    = "Kemiskinan vs Elektrifikasi",
-       subtitle = "Ukuran titik = nilai IPM",
-       x = "Rasio Elektrifikasi (%)",
-       y = "Tingkat Kemiskinan (%)",
-       color = "Wilayah", size = "IPM") +
-  theme_minimal(base_size = 10) +
-  theme(plot.title = element_text(face = "bold", hjust = 0.5),
-        legend.position = "right")
+```{r scatter-jakarta-tahun, fig.cap="Tren DKI Jakarta dari Tahun ke Tahun"}
+dki <- data_wilayah %>%
+  filter(provinsi == "DKI Jakarta")
+
+ggplot(dki, aes(x = factor(tahun), y = ipm)) +
+  geom_boxplot(fill = "skyblue") +
+  stat_summary(
+    fun = median,
+    geom = "point",
+    size = 3,
+    shape = 18
+  ) +
+  labs(
+    title = "Distribusi IPM DKI Jakarta per Tahun",
+    x = "Tahun",
+    y = "IPM"
+  ) +
+  theme_minimal()
+```
+
+### Hubungan Pengangguran dan Kemiskinan
+
+```{r scatter-pengangguran-kemiskinan, fig.cap="Tren DKI Jakarta dari Tahun ke Tahun"}
+ggplot(
+  data_wilayah,
+  aes(x = pengangguran, y = kemiskinan)
+) +
+  geom_point(alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(
+    title = "Hubungan Pengangguran dan Kemiskinan",
+    x = "Pengangguran (%)",
+    y = "Kemiskinan (%)"
+  ) +
+  theme_minimal()
 ```
 
 ---
