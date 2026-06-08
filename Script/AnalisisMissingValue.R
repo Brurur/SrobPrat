@@ -20,6 +20,8 @@ jumlah_missing <- colSums(is.na(data))
 
 jumlah_missing
 
+sum(jumlah_missing)
+
 # Persentase missing value
 persen_missing <- (jumlah_missing / nrow(data)) * 100
 
